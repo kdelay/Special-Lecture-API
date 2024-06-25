@@ -1,0 +1,12 @@
+package lecture.special.infra.repository.user;
+
+import lecture.special.domain.model.user.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+@Repository
+@RequiredArgsConstructor
+public class UserRepositoryImpl implements UserRepository {
+
+    private final JpaUserRepository jpaUserRepository;
+}

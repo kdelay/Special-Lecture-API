@@ -1,4 +1,4 @@
-package lecture.special.domain;
+package lecture.special.domain.model.lecture;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

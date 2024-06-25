@@ -1,6 +1,8 @@
-package lecture.special.domain;
+package lecture.special.domain.model.lecture.history;
 
 import jakarta.persistence.*;
+import lecture.special.domain.model.lecture.SpecialLecture;
+import lecture.special.domain.model.user.Users;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
