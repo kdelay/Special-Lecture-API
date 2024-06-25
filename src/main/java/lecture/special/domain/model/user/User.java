@@ -20,4 +20,9 @@ public class User {
         this.userId = userId;
         this.is_enrolled = false;
     }
+
+    //특강 신청 여부 완료로 변경
+    public void setTrueEnrolled() {
+        this.is_enrolled = true;
+    }
 }
