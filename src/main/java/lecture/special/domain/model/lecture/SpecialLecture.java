@@ -25,4 +25,11 @@ public class SpecialLecture {
     //특강 날짜
     @Column(nullable = false)
     private LocalDate speLecDate;
+
+    public SpecialLecture(Long id, String speLecName, int capacity, LocalDate speLecDate) {
+        this.id = id;
+        this.speLecName = speLecName;
+        this.capacity = capacity;
+        this.speLecDate = speLecDate;
+    }
 }
