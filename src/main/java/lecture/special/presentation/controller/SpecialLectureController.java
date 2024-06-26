@@ -2,6 +2,7 @@ package lecture.special.presentation.controller;
 
 import lecture.special.application.service.SpecialLectureService;
 import lecture.special.domain.model.lecture.SpecialLecture;
+import lecture.special.domain.model.user.User;
 import lecture.special.presentation.request.SpecialLectureReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,5 +26,11 @@ public class SpecialLectureController {
     @GetMapping
     public List<SpecialLecture> search() {
         return specialLectureService.search();
+    }
+
+    @GetMapping("/application/{userId}")
+    public ResponseEntity<String> searchUserEnrolled(@PathVariable Long userId) {
+        specialLectureService.searchUserEnrolled(userId);
+        return ResponseEntity.ok(userId + "님은 특강 신청에 성공하였습니다.");
     }
 }

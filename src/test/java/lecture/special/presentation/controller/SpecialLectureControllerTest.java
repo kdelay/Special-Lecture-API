@@ -3,6 +3,8 @@ package lecture.special.presentation.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lecture.special.application.service.SpecialLectureService;
 import lecture.special.domain.model.lecture.SpecialLecture;
+import lecture.special.domain.model.user.User;
+import lecture.special.domain.model.user.UserRepository;
 import lecture.special.presentation.request.SpecialLectureReq;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,9 @@ class SpecialLectureControllerTest {
 
     @MockBean
     SpecialLectureService specialLectureService;
+
+    @MockBean
+    UserRepository userRepository;
 
     // ---------------------------------------------------------------------------
 
@@ -69,6 +74,24 @@ class SpecialLectureControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)));
+    }
+
+    @Test
+    @DisplayName("GET /lectures/application/{userId} 특강 신청 완료 여부 조회")
+    void searchUserEnrolled() throws Exception {
+
+        //유저 조회
+        Long userId = 1L;
+        User user = new User(userId);
+        when(userRepository.findById(userId)).thenReturn(user);
+
+        mockMvc.perform(get("/lectures/application/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(userId + "님은 특강 신청에 성공하였습니다."));
+
+        //1번 호출 되었는지 검증
+        verify(specialLectureService, times(1)).searchUserEnrolled(userId);
     }
 
 }

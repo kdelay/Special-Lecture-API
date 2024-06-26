@@ -22,10 +22,17 @@ public class SpecialLectureService {
     private final SpecialLectureRepository specialLectureRepository;
     private final SpecialLectureHistoryRepository historyRepository;
 
+    private User getUser(Long userId) {
+        User user = userRepository.findById(userId);
+        if (user == null) throw new IllegalArgumentException("사용자가 없습니다.");
+        return user;
+    }
+
+    // ---------------------------------------------------------------------------
+
     public void apply(SpecialLectureReq specialLectureReq) {
         //사용자 조회
-        User user = userRepository.findById(specialLectureReq.userId());
-        if (user == null) throw new IllegalArgumentException("사용자가 없습니다.");
+        User user = getUser(specialLectureReq.userId());
 
         //특강 조회
         SpecialLecture specialLecture = specialLectureRepository.findBySpeLecName(specialLectureReq.speLecName());
@@ -41,5 +48,10 @@ public class SpecialLectureService {
 
     public List<SpecialLecture> search() {
         return specialLectureRepository.findAll();
+    }
+
+    public void searchUserEnrolled(Long userId) {
+        User user = getUser(userId);
+        if (!user.is_enrolled()) throw new IllegalStateException(userId + "님은 특강 신청에 실패하였습니다.");
     }
 }

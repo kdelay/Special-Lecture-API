@@ -163,4 +163,55 @@ class SpecialLectureServiceTest {
         //id가 1L, 2L 가 있는지 검증
         assertThat(search).extracting(SpecialLecture::getId).containsExactlyInAnyOrder(1L, 2L);
     }
+
+    // ---------------------------------------------------------------------------
+
+    /**
+     * public ResponseEntity<String> searchUserEnrolled(@PathVariable Long userId) {...}
+     */
+
+    @Test
+    @DisplayName("특강 신청 성공")
+    void searchUserEnrolled_success_test() {
+
+        //유저
+        Long userId = 1L;
+        User user = whenUser(userId);
+
+        //특강
+        Long id = 1L;
+        String speLecName = "자바";
+        int capacity = 1;
+        LocalDate localDate = LocalDate.parse("2024-06-25");
+        whenSpecialLecture(id, speLecName, capacity, localDate);
+
+        //특강 신청 성공한 경우
+        specialLectureService.apply(getSpecialLectureReq(userId, speLecName));
+
+        //특강 신청 여부가 완료로 변경되었는지 검증
+        user.setTrueEnrolled();
+        assertThat(user.is_enrolled()).isEqualTo(true);
+
+        specialLectureService.searchUserEnrolled(userId);
+    }
+
+    @Test
+    @DisplayName("특강 신청 실패")
+    void searchUserEnrolled_fail_test() {
+
+        //유저
+        Long userId = 1L;
+        User user = whenUser(userId);
+
+        //특강
+        Long id = 1L;
+        String speLecName = "자바";
+        int capacity = 1;
+        LocalDate localDate = LocalDate.parse("2024-06-25");
+        whenSpecialLecture(id, speLecName, capacity, localDate);
+
+        assertThatThrownBy(() -> specialLectureService.searchUserEnrolled(userId))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage(userId + "님은 특강 신청에 실패하였습니다.");
+    }
 }
