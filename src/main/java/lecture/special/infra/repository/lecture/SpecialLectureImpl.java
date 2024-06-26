@@ -5,6 +5,8 @@ import lecture.special.domain.model.lecture.SpecialLectureRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class SpecialLectureImpl implements SpecialLectureRepository {
@@ -14,5 +16,10 @@ public class SpecialLectureImpl implements SpecialLectureRepository {
     @Override
     public SpecialLecture findBySpeLecName(String speLecName) {
         return jpaLectureRepository.findBySpeLecName(speLecName).orElse(null);
+    }
+
+    @Override
+    public List<SpecialLecture> findAll() {
+        return jpaLectureRepository.findAll();
     }
 }

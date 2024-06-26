@@ -7,7 +7,6 @@ import lecture.special.domain.model.lecture.history.SpecialLectureHistoryReposit
 import lecture.special.domain.model.user.User;
 import lecture.special.domain.model.user.UserRepository;
 import lecture.special.presentation.request.SpecialLectureReq;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,8 +17,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @Transactional
@@ -66,6 +68,12 @@ class SpecialLectureServiceTest {
     private static SpecialLectureReq getSpecialLectureReq(Long userId, String speLecName) {
         return new SpecialLectureReq(userId, speLecName);
     }
+
+    // ---------------------------------------------------------------------------
+
+    /**
+     * public void apply(SpecialLectureReq specialLectureReq) {...}
+     */
 
     @Test
     @DisplayName("특강 신청 성공")
@@ -128,5 +136,31 @@ class SpecialLectureServiceTest {
         assertThatThrownBy(() -> specialLectureService.apply(getSpecialLectureReq(userId, speLecName)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당하는 특강이 없습니다.");
+    }
+
+    // ---------------------------------------------------------------------------
+
+    /**
+     * public List<SpecialLecture> search() {...}
+     */
+
+    @Test
+    @DisplayName("특강 목록 조회 성공")
+    void search() {
+
+        LocalDate localDate = LocalDate.parse("2024-06-26");
+        SpecialLecture lecture1 = new SpecialLecture(1L, "자바", 1, localDate);
+        SpecialLecture lecture2 = new SpecialLecture(2L, "스프링", 2, localDate);
+        List<SpecialLecture> list = Arrays.asList(lecture1, lecture2);
+
+        when(specialLectureRepository.findAll()).thenReturn(list);
+
+        List<SpecialLecture> search = specialLectureService.search();
+
+        //2개의 list를 가지고 있는지 검증
+        assertThat(search).hasSize(2);
+
+        //id가 1L, 2L 가 있는지 검증
+        assertThat(search).extracting(SpecialLecture::getId).containsExactlyInAnyOrder(1L, 2L);
     }
 }

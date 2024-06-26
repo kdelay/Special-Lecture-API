@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -35,5 +37,9 @@ public class SpecialLectureService {
 
         //특강 신청 여부 완료로 변경
         user.setTrueEnrolled();
+    }
+
+    public List<SpecialLecture> search() {
+        return specialLectureRepository.findAll();
     }
 }
