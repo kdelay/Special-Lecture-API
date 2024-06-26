@@ -65,8 +65,14 @@ class SpecialLectureServiceTest {
         return user;
     }
 
-    private static SpecialLectureReq getSpecialLectureReq(Long userId, String speLecName) {
+    private SpecialLectureReq getSpecialLectureReq(Long userId, String speLecName) {
         return new SpecialLectureReq(userId, speLecName);
+    }
+
+    private User getUser() { return whenUser(1L); }
+
+    private SpecialLecture getSpecialLecture() {
+        return whenSpecialLecture(1L, "자바", 1, LocalDate.parse("2024-06-25"));
     }
 
     // ---------------------------------------------------------------------------
@@ -80,18 +86,13 @@ class SpecialLectureServiceTest {
     void apply() {
 
         //유저
-        Long userId = 1L;
-        User user = whenUser(userId);
+        User user = getUser();
 
         //특강
-        Long id = 1L;
-        String speLecName = "자바";
-        int capacity = 1;
-        LocalDate localDate = LocalDate.parse("2024-06-25");
-        whenSpecialLecture(id, speLecName, capacity, localDate);
+        SpecialLecture specialLecture = getSpecialLecture();
 
         //특강 신청
-        specialLectureService.apply(getSpecialLectureReq(userId, speLecName));
+        specialLectureService.apply(getSpecialLectureReq(user.getUserId(), specialLecture.getSpeLecName()));
         //save 메서드가 호출되었는지 검증
         verify(historyRepository).save(any(SpecialLectureHistory.class));
 
@@ -110,13 +111,10 @@ class SpecialLectureServiceTest {
         when(userRepository.findById(userId)).thenReturn(null);
 
         //특강
-        Long id = 1L;
-        String speLecName = "자바";
-        int capacity = 1;
-        LocalDate localDate = LocalDate.parse("2024-06-25");
-        whenSpecialLecture(id, speLecName, capacity, localDate);
+        SpecialLecture specialLecture = getSpecialLecture();
 
-        assertThatThrownBy(() -> specialLectureService.apply(getSpecialLectureReq(userId, speLecName)))
+        assertThatThrownBy(() ->
+                specialLectureService.apply(getSpecialLectureReq(userId, specialLecture.getSpeLecName())))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("사용자가 없습니다.");
     }
@@ -126,14 +124,13 @@ class SpecialLectureServiceTest {
     void isEmptySpecialLecture() {
 
         //유저
-        Long userId = 1L;
-        whenUser(userId);
+        User user = getUser();
 
         //특강
         String speLecName = null;
         when(specialLectureRepository.findBySpeLecName(speLecName)).thenReturn(null);
 
-        assertThatThrownBy(() -> specialLectureService.apply(getSpecialLectureReq(userId, speLecName)))
+        assertThatThrownBy(() -> specialLectureService.apply(getSpecialLectureReq(user.getUserId(), speLecName)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당하는 특강이 없습니다.");
     }
@@ -176,17 +173,13 @@ class SpecialLectureServiceTest {
 
         //유저
         Long userId = 1L;
-        User user = whenUser(userId);
+        User user = getUser();
 
         //특강
-        Long id = 1L;
-        String speLecName = "자바";
-        int capacity = 1;
-        LocalDate localDate = LocalDate.parse("2024-06-25");
-        whenSpecialLecture(id, speLecName, capacity, localDate);
+        SpecialLecture specialLecture = getSpecialLecture();
 
         //특강 신청 성공한 경우
-        specialLectureService.apply(getSpecialLectureReq(userId, speLecName));
+        specialLectureService.apply(getSpecialLectureReq(userId, specialLecture.getSpeLecName()));
 
         //특강 신청 여부가 완료로 변경되었는지 검증
         user.setTrueEnrolled();
@@ -201,14 +194,10 @@ class SpecialLectureServiceTest {
 
         //유저
         Long userId = 1L;
-        User user = whenUser(userId);
+        getUser();
 
         //특강
-        Long id = 1L;
-        String speLecName = "자바";
-        int capacity = 1;
-        LocalDate localDate = LocalDate.parse("2024-06-25");
-        whenSpecialLecture(id, speLecName, capacity, localDate);
+        getSpecialLecture();
 
         assertThatThrownBy(() -> specialLectureService.searchUserEnrolled(userId))
                 .isInstanceOf(IllegalStateException.class)
