@@ -83,7 +83,7 @@ class SpecialLectureServiceTest {
 
     @Test
     @DisplayName("특강 신청 성공")
-    void apply() {
+    void applyTest() {
 
         //유저
         User user = getUser();
@@ -104,7 +104,7 @@ class SpecialLectureServiceTest {
 
     @Test
     @DisplayName("사용자가 없는 경우")
-    void isEmptyUser() {
+    void isEmptyUserTest() {
 
         //유저
         Long userId = null;
@@ -121,7 +121,7 @@ class SpecialLectureServiceTest {
 
     @Test
     @DisplayName("특강이 없는 경우")
-    void isEmptySpecialLecture() {
+    void isEmptySpecialLectureTest() {
 
         //유저
         User user = getUser();
@@ -143,7 +143,7 @@ class SpecialLectureServiceTest {
 
     @Test
     @DisplayName("특강 목록 조회 성공")
-    void search() {
+    void searchTest() {
 
         LocalDate localDate = LocalDate.parse("2024-06-26");
         SpecialLecture lecture1 = new SpecialLecture(1L, "자바", 1, localDate);
@@ -169,7 +169,7 @@ class SpecialLectureServiceTest {
 
     @Test
     @DisplayName("특강 신청 성공")
-    void searchUserEnrolled_success_test() {
+    void searchUserEnrolledTest() {
 
         //유저
         Long userId = 1L;
@@ -190,7 +190,7 @@ class SpecialLectureServiceTest {
 
     @Test
     @DisplayName("특강 신청 실패")
-    void searchUserEnrolled_fail_test() {
+    void searchUserEnrolledFailTest() {
 
         //유저
         Long userId = 1L;

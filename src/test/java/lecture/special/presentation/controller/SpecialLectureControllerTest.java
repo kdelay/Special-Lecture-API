@@ -43,7 +43,7 @@ class SpecialLectureControllerTest {
 
     @Test
     @DisplayName("POST /lectures/apply 특강 신청")
-    void apply() throws Exception {
+    void applyTest() throws Exception {
 
         Long userId = 1L;
         String spcLecName = "자바";
@@ -61,7 +61,7 @@ class SpecialLectureControllerTest {
 
     @Test
     @DisplayName("GET /lectures 특강 목록 조회")
-    void search() throws Exception {
+    void searchTest() throws Exception {
 
         LocalDate localDate = LocalDate.parse("2024-06-26");
         SpecialLecture lecture1 = new SpecialLecture(1L, "자바", 1, localDate);
@@ -78,7 +78,7 @@ class SpecialLectureControllerTest {
 
     @Test
     @DisplayName("GET /lectures/application/{userId} 특강 신청 완료 여부 조회")
-    void searchUserEnrolled() throws Exception {
+    void searchUserEnrolledTest() throws Exception {
 
         //유저 조회
         Long userId = 1L;
