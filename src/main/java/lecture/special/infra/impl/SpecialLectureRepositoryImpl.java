@@ -1,7 +1,8 @@
-package lecture.special.infra.repository.lecture;
+package lecture.special.infra.impl;
 
-import lecture.special.domain.model.lecture.SpecialLecture;
-import lecture.special.domain.model.lecture.SpecialLectureRepository;
+import lecture.special.infra.entity.lecture.SpecialLecture;
+import lecture.special.domain.repository.SpecialLectureRepository;
+import lecture.special.infra.jpa.JpaSpecialLectureRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class SpecialLectureImpl implements SpecialLectureRepository {
+public class SpecialLectureRepositoryImpl implements SpecialLectureRepository {
 
     private final JpaSpecialLectureRepository jpaLectureRepository;
 

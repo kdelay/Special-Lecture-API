@@ -1,4 +1,6 @@
-package lecture.special.domain.model.lecture;
+package lecture.special.domain.repository;
+
+import lecture.special.infra.entity.lecture.SpecialLecture;
 
 import java.util.List;
 

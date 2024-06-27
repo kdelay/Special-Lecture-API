@@ -1,4 +1,6 @@
-package lecture.special.domain.model.user;
+package lecture.special.domain.repository;
+
+import lecture.special.infra.entity.user.User;
 
 public interface UserRepository {
 

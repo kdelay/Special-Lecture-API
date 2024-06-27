@@ -1,7 +1,8 @@
-package lecture.special.infra.repository.user;
+package lecture.special.infra.impl;
 
-import lecture.special.domain.model.user.User;
-import lecture.special.domain.model.user.UserRepository;
+import lecture.special.infra.entity.user.User;
+import lecture.special.domain.repository.UserRepository;
+import lecture.special.infra.jpa.JpaUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

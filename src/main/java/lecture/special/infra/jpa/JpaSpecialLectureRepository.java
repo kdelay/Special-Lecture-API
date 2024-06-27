@@ -1,6 +1,6 @@
-package lecture.special.infra.repository.lecture;
+package lecture.special.infra.jpa;
 
-import lecture.special.domain.model.lecture.SpecialLecture;
+import lecture.special.infra.entity.lecture.SpecialLecture;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,6 +1,9 @@
-package lecture.special.domain.model.user;
+package lecture.special.infra.entity.user;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,17 +15,7 @@ public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    //특강 신청 여부
-    @Column(nullable = false)
-    private boolean is_enrolled;
-
     public User(Long userId) {
         this.userId = userId;
-        this.is_enrolled = false;
-    }
-
-    //특강 신청 여부 완료로 변경
-    public void setTrueEnrolled() {
-        this.is_enrolled = true;
     }
 }
