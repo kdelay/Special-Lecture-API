@@ -5,9 +5,12 @@ import lecture.special.domain.repository.SpecialLectureHistoryRepository;
 import lecture.special.domain.repository.SpecialLectureRepository;
 import lecture.special.domain.repository.UserRepository;
 import lecture.special.domain.service.SpecialLectureService;
+import lecture.special.domain.service.business.SpecialLectureDomain;
 import lecture.special.infra.entity.lecture.Schedule;
 import lecture.special.infra.entity.lecture.SpecialLecture;
+import lecture.special.infra.entity.lecture.SpecialLectureHistory;
 import lecture.special.infra.entity.user.User;
+import lecture.special.presentation.request.ApplyRequest;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -15,7 +18,12 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @Transactional
@@ -23,6 +31,9 @@ class SpecialLectureServiceTest {
 
     @InjectMocks
     SpecialLectureService specialLectureService;
+
+    @Mock
+    SpecialLectureDomain domain;
 
     @Mock
     SpecialLectureRepository specialLectureRepository;
@@ -53,7 +64,7 @@ class SpecialLectureServiceTest {
     //유저 초기 데이터 init
     private User whenUser(Long userId) {
         User user = new User(userId);
-        when(userRepository.findById(userId)).thenReturn(user);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         return user;
     }
 
@@ -72,9 +83,9 @@ class SpecialLectureServiceTest {
     }
 
     //특강 신청 시, request
-//    private ApplyReq initSpecialLectureReq(Long userId, String speLecName) {
-//        return new ApplyReq(userId, speLecName);
-//    }
+    private ApplyRequest initSpecialLectureReq(Long userId, String speLecName) {
+        return new ApplyRequest(userId, speLecName);
+    }
 
     // ---------------------------------------------------------------------------
 
@@ -86,57 +97,60 @@ class SpecialLectureServiceTest {
     @DisplayName("특강 신청 성공")
     void applyTest() {
 
+        Long pk = 1L;
+
         //유저
-        User user = whenUser(1L);
+        User user = whenUser(pk);
+        when(domain.getUser(pk)).thenReturn(user);
 
         //특강
-        SpecialLecture specialLecture = whenSpecialLecture(1L, "자바");
-        whenSchedule(1L, specialLecture, 30, 0, LocalDate.of(2024, 6, 27));
+        SpecialLecture specialLecture = whenSpecialLecture(pk, "자바");
+        whenSchedule(pk, specialLecture, 30, 0, LocalDate.of(2024, 6, 27));
 
         //특강 신청
-//        specialLectureService.apply(initSpecialLectureReq(user.getUserId(), specialLecture.getSpeLecName()));
+        ApplyRequest req = initSpecialLectureReq(user.getUserId(), specialLecture.getSpeLecName());
+        specialLectureService.apply(req.userId(), req.speLecName());
+
         //save 메서드가 호출되었는지 검증
-//        verify(historyRepository).save(any(SpecialLectureHistory.class));
-//
-//        //특강 신청 여부 완료로 변경
-//        user.setTrueEnrolled();
-//        //user의 is_enrolled가 true로 변경되었는지 검증
-//        assertThat(user.is_enrolled()).isEqualTo(true);
+        verify(historyRepository).save(any(SpecialLectureHistory.class));
     }
 
     @Test
-    @Disabled
     @DisplayName("사용자가 없는 경우")
     void isEmptyUserTest() {
-//
-//        //유저
-//        Long userId = null;
-//        when(userRepository.findById(userId)).thenReturn(null);
-//
-//        //특강
-//        SpecialLecture specialLecture = getSpecialLecture();
-//
-//        assertThatThrownBy(() ->
-//                specialLectureService.apply(getSpecialLectureReq(userId, specialLecture.getSpeLecName())))
-//                .isInstanceOf(IllegalArgumentException.class)
-//                .hasMessage("사용자가 없습니다.");
+
+        //유저
+        Long pk = 1L;
+        when(domain.getUser(pk)).thenThrow(new NoSuchElementException("사용자가 없습니다."));
+
+        //특강
+        String speLecName = "자바";
+        whenSpecialLecture(pk, speLecName);
+
+        //검증
+        assertThatThrownBy(() ->
+                specialLectureService.apply(pk, speLecName))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("사용자가 없습니다.");
     }
 
     @Test
-    @Disabled
     @DisplayName("특강이 없는 경우")
     void isEmptySpecialLectureTest() {
 
-//        //유저
-//        User user = getUser();
-//
-//        //특강
-//        String speLecName = null;
-//        when(specialLectureRepository.findBySpeLecName(speLecName)).thenReturn(null);
-//
-//        assertThatThrownBy(() -> specialLectureService.apply(getSpecialLectureReq(user.getUserId(), speLecName)))
-//                .isInstanceOf(IllegalArgumentException.class)
-//                .hasMessage("해당하는 특강이 없습니다.");
+        Long pk = 1L;
+
+        //유저
+        User user = whenUser(pk);
+        when(domain.getUser(pk)).thenReturn(user);
+
+        //특강
+        String speLecName = null;
+        when(specialLectureRepository.findBySpeLecName(speLecName)).thenReturn(null);
+
+        assertThatThrownBy(() -> specialLectureService.apply(user.getUserId(), speLecName))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("해당하는 특강이 없습니다.");
     }
 
     // ---------------------------------------------------------------------------
