@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -24,10 +25,11 @@ public class SpecialLectureController {
 
         Long userId = request.userId();
         String speLecName = request.speLecName();
+        LocalDate speLecDate = request.speLecDate();
 
-        specialLectureService.apply(userId, speLecName);
+        specialLectureService.apply(userId, speLecName, speLecDate);
 
-        MessageResponse response = new MessageResponse(speLecName + " 특강 신청에 성공하였습니다.");
+        MessageResponse response = new MessageResponse(speLecDate + "날에 진행하는 " + speLecName + " 특강 신청에 성공하였습니다.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -38,11 +40,11 @@ public class SpecialLectureController {
 
     @GetMapping("/application/{userId}")
     public ResponseEntity<MessageResponse> searchUserEnrolled(
-            @PathVariable Long userId, @PathParam("speLecName") String speLecName
+            @PathVariable Long userId, @PathParam("speLecName") String speLecName, @PathParam("speLecDate") LocalDate speLecDate
     ) {
-        specialLectureService.searchUserEnrolled(userId, speLecName);
+        specialLectureService.searchUserEnrolled(userId, speLecName, speLecDate);
 
-        MessageResponse response = new MessageResponse(userId + "님은 " + speLecName + " 특강 신청에 성공하였습니다.");
+        MessageResponse response = new MessageResponse(userId + "님은 " + speLecDate + "날에 진행하는 " +speLecName + " 특강 신청에 성공하였습니다.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

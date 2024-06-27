@@ -1,5 +1,7 @@
 package lecture.special.presentation.request;
 
-public record ApplyRequest(Long userId, String speLecName) {
+import java.time.LocalDate;
+
+public record ApplyRequest(Long userId, String speLecName, LocalDate speLecDate) {
 
 }

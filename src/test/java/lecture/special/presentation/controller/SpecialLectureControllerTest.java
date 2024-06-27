@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -59,7 +60,8 @@ class SpecialLectureControllerTest {
         //given
         Long userId = 1L;
         String speLecName = "자바";
-        ApplyRequest applyReq = new ApplyRequest(userId, speLecName);
+        LocalDate speLecDate = LocalDate.parse("2024-06-28");
+        ApplyRequest applyReq = new ApplyRequest(userId, speLecName, speLecDate);
         String req = objectMapper.writeValueAsString(applyReq);
 
         //when & then
@@ -69,7 +71,7 @@ class SpecialLectureControllerTest {
                 .andExpect(status().isOk());
 
         //service call 검증
-        verify(specialLectureService).apply(eq(userId), eq(speLecName));
+        verify(specialLectureService).apply(eq(userId), eq(speLecName), eq(speLecDate));
     }
 
     @Test
@@ -94,16 +96,17 @@ class SpecialLectureControllerTest {
 
         Long userId = 1L;
         String speLecName = "자바";
+        LocalDate speLecDate = LocalDate.parse("2024-06-28");
 
-        doNothing().when(specialLectureService).searchUserEnrolled(anyLong(), anyString());
+        doNothing().when(specialLectureService).searchUserEnrolled(userId, speLecName, speLecDate);
 
         mockMvc.perform(get("/lectures/application/{userId}", userId)
                         .param("speLecName", speLecName)
+                        .param("speLecDate", speLecDate.toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         //1번 호출 되었는지 검증
-        verify(specialLectureService).searchUserEnrolled(eq(userId), eq(speLecName));
+        verify(specialLectureService).searchUserEnrolled(eq(userId), eq(speLecName), eq(speLecDate));
     }
-
 }

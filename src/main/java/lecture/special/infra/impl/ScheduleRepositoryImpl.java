@@ -7,6 +7,7 @@ import lecture.special.infra.jpa.JpaScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
@@ -21,7 +22,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
     }
 
     @Override
-    public Optional<Schedule> findBySpecialLecture(SpecialLecture specialLecture) {
-        return jpaRepository.findBySpecialLecture(specialLecture);
+    public Optional<Schedule> findBySpecialLectureAndSpeLecDate(SpecialLecture specialLecture, LocalDate speLecDate) {
+        return jpaRepository.findBySpecialLectureAndSpeLecDate(specialLecture, speLecDate);
     }
 }

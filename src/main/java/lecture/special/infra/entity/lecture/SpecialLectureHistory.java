@@ -22,6 +22,7 @@ public class SpecialLectureHistory {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    //특강 일정 id
     @ManyToOne
     @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule;

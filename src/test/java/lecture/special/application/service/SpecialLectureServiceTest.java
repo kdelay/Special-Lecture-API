@@ -29,6 +29,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -89,8 +90,8 @@ class SpecialLectureServiceTest {
     }
 
     //특강 신청 시, request
-    private ApplyRequest initSpecialLectureReq(Long userId, String speLecName) {
-        return new ApplyRequest(userId, speLecName);
+    private ApplyRequest initSpecialLectureReq(Long userId, String speLecName, LocalDate speLecDate) {
+        return new ApplyRequest(userId, speLecName, speLecDate);
     }
 
     // ---------------------------------------------------------------------------
@@ -110,12 +111,13 @@ class SpecialLectureServiceTest {
         when(domain.getUser(pk)).thenReturn(user);
 
         //특강
+        LocalDate speLecDate = LocalDate.parse("2024-06-28");
         SpecialLecture specialLecture = whenSpecialLecture(pk, "자바");
-        whenSchedule(pk, specialLecture, 30, 0, LocalDate.of(2024, 6, 27));
+        whenSchedule(pk, specialLecture, 30, 0, speLecDate);
 
         //특강 신청
-        ApplyRequest req = initSpecialLectureReq(user.getUserId(), specialLecture.getSpeLecName());
-        specialLectureService.apply(req.userId(), req.speLecName());
+        ApplyRequest req = initSpecialLectureReq(user.getUserId(), specialLecture.getSpeLecName(), speLecDate);
+        specialLectureService.apply(req.userId(), req.speLecName(), req.speLecDate());
 
         //save 메서드가 호출되었는지 검증
         verify(historyRepository).save(any(SpecialLectureHistory.class));
@@ -135,7 +137,7 @@ class SpecialLectureServiceTest {
 
         //검증
         assertThatThrownBy(() ->
-                specialLectureService.apply(pk, speLecName))
+                specialLectureService.apply(pk, speLecName, LocalDate.ofEpochDay(anyLong())))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("사용자가 없습니다.");
     }
@@ -154,7 +156,7 @@ class SpecialLectureServiceTest {
         String speLecName = null;
         when(domain.getSpecialLecture(speLecName)).thenThrow(new NoSuchElementException("해당하는 특강이 없습니다."));
 
-        assertThatThrownBy(() -> specialLectureService.apply(user.getUserId(), speLecName))
+        assertThatThrownBy(() -> specialLectureService.apply(user.getUserId(), speLecName, LocalDate.ofEpochDay(anyLong())))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("해당하는 특강이 없습니다.");
     }
@@ -219,11 +221,12 @@ class SpecialLectureServiceTest {
 
         //특강
         String speLecName = "자바";
+        LocalDate speLecDate = LocalDate.parse("2024-06-28");
         SpecialLecture specialLecture = whenSpecialLecture(pk, speLecName);
-        Schedule schedule = whenSchedule(pk, specialLecture, 2, 0, LocalDate.parse("2024-06-28"));
+        Schedule schedule = whenSchedule(pk, specialLecture, 2, 0, speLecDate);
 
         //특강 신청 성공한 경우
-        specialLectureService.apply(pk, speLecName);
+        specialLectureService.apply(pk, speLecName, speLecDate);
 
         //특강 히스토리 저장 메서드가 호출되었는지 검증
         verify(historyRepository).save(any(SpecialLectureHistory.class));
@@ -249,14 +252,15 @@ class SpecialLectureServiceTest {
         User user = whenUser(pk);
 
         //특강 조회
+        LocalDate speLecDate = LocalDate.parse("2024-06-28");
         SpecialLecture specialLecture = whenSpecialLecture(pk, speLecName);
-        Schedule schedule = whenSchedule(pk, specialLecture, 2, 0, LocalDate.parse("2024-06-28"));
+        Schedule schedule = whenSchedule(pk, specialLecture, 2, 0, speLecDate);
 
         //특강 히스토리에 없는 경우 exception 발생
         when(historyRepository.findByUserAndSchedule(user, schedule))
                 .thenThrow(new IllegalStateException(message));
 
-        assertThatThrownBy(() -> specialLectureService.searchUserEnrolled(pk, speLecName))
+        assertThatThrownBy(() -> specialLectureService.searchUserEnrolled(pk, speLecName, speLecDate))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage(message);
     }

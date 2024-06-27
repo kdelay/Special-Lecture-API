@@ -9,6 +9,7 @@ import lecture.special.infra.entity.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 
 @Component
@@ -29,8 +30,8 @@ public class SpecialLectureDomain {
                 .orElseThrow(() -> new NoSuchElementException("해당하는 특강이 없습니다."));
     }
 
-    public Schedule getSchedule(SpecialLecture specialLecture) {
-        return scheduleRepository.findBySpecialLecture(specialLecture)
+    public Schedule getSchedule(SpecialLecture specialLecture, LocalDate speLecDate) {
+        return scheduleRepository.findBySpecialLectureAndSpeLecDate(specialLecture, speLecDate)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 특강 일자가 없습니다."));
     }
 }
