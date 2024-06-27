@@ -11,7 +11,10 @@ import lecture.special.infra.entity.lecture.SpecialLecture;
 import lecture.special.infra.entity.lecture.SpecialLectureHistory;
 import lecture.special.infra.entity.user.User;
 import lecture.special.presentation.request.ApplyRequest;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -149,7 +152,7 @@ class SpecialLectureServiceTest {
 
         //특강
         String speLecName = null;
-        when(specialLectureRepository.findBySpeLecName(speLecName)).thenReturn(null);
+        when(domain.getSpecialLecture(speLecName)).thenThrow(new NoSuchElementException("해당하는 특강이 없습니다."));
 
         assertThatThrownBy(() -> specialLectureService.apply(user.getUserId(), speLecName))
                 .isInstanceOf(NoSuchElementException.class)
@@ -206,53 +209,55 @@ class SpecialLectureServiceTest {
      */
 
     @Test
-    @Disabled
     @DisplayName("특강 신청 성공")
     void searchUserEnrolledTest() {
 
-//        String speLecName = "자바";
-//        SpecialLecture specialLecture = new SpecialLecture(pk, speLecName);
-//        when(specialLectureRepository.findBySpeLecName(speLecName)).thenReturn(specialLecture);
-//        Schedule schedule = new Schedule(pk, specialLecture, 1, 0, LocalDate.parse("2024-06-28"));
-//        when(scheduleRepository.findBySpecialLecture(specialLecture)).thenReturn(schedule);
+        Long pk = 1L;
 
-//        //유저
-//        Long userId = 1L;
-//        User user = getUser();
-//
-//        //특강
-//        SpecialLecture specialLecture = getSpecialLecture();
-//
-//        //특강 신청 성공한 경우
-//        specialLectureService.apply(getSpecialLectureReq(userId, specialLecture.getSpeLecName()));
-//
-//        //특강 히스토리 저장 메서드가 호출되었는지 검증
-//        verify(historyRepository).save(any(SpecialLectureHistory.class));
-//
-//        //특강 히스토리에 유저 아이디가 있는지 검증
-////        when(historyRepository.findByUser(user))
-//
-//        //특강 신청 여부가 완료로 변경되었는지 검증
-//        user.setTrueEnrolled();
-//        assertThat(user.is_enrolled()).isEqualTo(true);
-//
-//        specialLectureService.searchUserEnrolled(userId);
+        //유저
+        User user = whenUser(pk);
+
+        //특강
+        String speLecName = "자바";
+        SpecialLecture specialLecture = whenSpecialLecture(pk, speLecName);
+        Schedule schedule = whenSchedule(pk, specialLecture, 2, 0, LocalDate.parse("2024-06-28"));
+
+        //특강 신청 성공한 경우
+        specialLectureService.apply(pk, speLecName);
+
+        //특강 히스토리 저장 메서드가 호출되었는지 검증
+        verify(historyRepository).save(any(SpecialLectureHistory.class));
+
+        //특강 히스토리
+        SpecialLectureHistory history = new SpecialLectureHistory(user, schedule);
+        when(historyRepository.findByUserAndSchedule(user, schedule)).thenReturn(Optional.of(history));
+
+        //유저가 특강 신청에 성공했는지 검증
+        assertThat(history.getUser().getUserId()).isEqualTo(1L);
+        assertThat(history.getSchedule().getSpecialLecture().getId()).isEqualTo(1L);
     }
 
     @Test
-    @Disabled
     @DisplayName("특강 신청 실패")
     void searchUserEnrolledFailTest() {
 
-//        //유저
-//        Long userId = 1L;
-//        getUser();
-//
-//        //특강
-//        getSpecialLecture();
-//
-//        assertThatThrownBy(() -> specialLectureService.searchUserEnrolled(userId))
-//                .isInstanceOf(IllegalStateException.class)
-//                .hasMessage(userId + "님은 특강 신청에 실패하였습니다.");
+        Long pk = 1L;
+        String speLecName = "자바";
+        String message = pk + "님은 " + speLecName + " 특강 신청에 실패하였습니다.";
+
+        //유저 조회
+        User user = whenUser(pk);
+
+        //특강 조회
+        SpecialLecture specialLecture = whenSpecialLecture(pk, speLecName);
+        Schedule schedule = whenSchedule(pk, specialLecture, 2, 0, LocalDate.parse("2024-06-28"));
+
+        //특강 히스토리에 없는 경우 exception 발생
+        when(historyRepository.findByUserAndSchedule(user, schedule))
+                .thenThrow(new IllegalStateException(message));
+
+        assertThatThrownBy(() -> specialLectureService.searchUserEnrolled(pk, speLecName))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage(message);
     }
 }
