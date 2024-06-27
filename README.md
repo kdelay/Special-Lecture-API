@@ -1,29 +1,41 @@
 # ERD Diagram
-![image](https://github.com/kdelay/Special-Lecture-API/assets/90545043/78a48399-ee66-40c0-9c6b-977122b8989d)
+![image](https://github.com/kdelay/Special-Lecture-API/assets/90545043/af13c1fa-f864-4ffb-ba6a-54f101b23711)
 <details>
   <summary>details</summary>
 
   ```
-Table users {
-  user_id integer [pk, note: '유저 ID']
-  is_enrolled boolean [not null, default: 0, note: '특강 신청 여부']
+Table user {
+  user_id bigint [pk, note: 'auto increment']
+}
+
+Table schedule {
+  id bigint [pk, note: 'auto increment']
+  special_lecture_id bigint [not null, note: '특강 id']
+  capacity_count integer [not null, note: '수용 인원']
+  enroll_count integer [not null, note: '신청 인원']
+  spe_lec_date date [not null, note: '특강 날짜']
 }
 
 Table special_lecture {
-  id integer [pk, increment]
-  spe_lec_name varchar [not null, note: '특강 이름']
-  spe_lec_date timestamp [not null, note: '특강 날짜']
-  capacity tinyint [not null, note: '수용 인원']
+  id bigint [pk, increment]
+  spe_lec_name varchar(30) [not null, note: '특강 명']
 }
 
 Table special_lecture_history {
-  id integer [pk, increment]
-  user_id integer [not null, note: '유저 ID']
-  special_lecture_id integer [not null, note: '특강 ID']
+  id bigint [pk, increment]
+  user_id bigint [not null, note: '유저 id']
+  schedule_id bigint [not null, note: '특강 id']
+  created_at timestamp(6) [not null, note: '생성 날짜']
+  updated_at timestamp(6) [not null, note: '수정 날짜']
+
+  Indexes {
+    (user_id, schedule_id) [unique]
+  }
 }
 
-Ref: special_lecture_history.special_lecture_id > special_lecture.id
-Ref: special_lecture_history.user_id > users.user_id
+Ref: special_lecture_history.user_id > user.user_id
+Ref: special_lecture_history.schedule_id > schedule.id
+Ref: schedule.special_lecture_id > special_lecture.id
   ```
 </details>
 
