@@ -30,6 +30,7 @@ public class SpecialLectureDomain {
                 .orElseThrow(() -> new NoSuchElementException("해당하는 특강이 없습니다."));
     }
 
+    //특강 일자 조회 및 쓰기 동시성 제어(비관적 락 사용)
     public Schedule getSchedule(SpecialLecture specialLecture, LocalDate speLecDate) {
         return scheduleRepository.findBySpecialLectureAndSpeLecDate(specialLecture, speLecDate)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 특강 일자가 없습니다."));
