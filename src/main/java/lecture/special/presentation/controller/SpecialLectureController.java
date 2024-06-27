@@ -2,7 +2,9 @@ package lecture.special.presentation.controller;
 
 import lecture.special.domain.service.SpecialLectureService;
 import lecture.special.presentation.request.ApplyRequest;
+import lecture.special.presentation.response.ApplyResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,13 +19,15 @@ public class SpecialLectureController {
     private final SpecialLectureService specialLectureService;
 
     @PostMapping("/apply")
-    public ResponseEntity<String> apply(@RequestBody ApplyRequest applyRequest) {
+    public ResponseEntity<ApplyResponse> apply(@RequestBody ApplyRequest request) {
 
-        Long userId = applyRequest.userId();
-        String speLecName = applyRequest.speLecName();
+        Long userId = request.userId();
+        String speLecName = request.speLecName();
 
         specialLectureService.apply(userId, speLecName);
-        return ResponseEntity.ok("특강 신청에 성공하였습니다.");
+
+        ApplyResponse response = new ApplyResponse(speLecName + " 특강 신청에 성공하였습니다.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 //    @GetMapping
