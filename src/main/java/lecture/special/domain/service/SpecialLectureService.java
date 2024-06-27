@@ -32,6 +32,13 @@ public class SpecialLectureService {
         SpecialLecture specialLecture = domain.getSpecialLecture(speLecName);
         Schedule schedule = domain.getSchedule(specialLecture, speLecDate);
 
+        //더 이상 특강 인원을 받을 수 없는 경우 exception (요청 시 수용 인원 초과)
+        boolean isFullCapacity = schedule.getEnroll_count() >= schedule.getCapacity_count();
+        if (isFullCapacity) throw new IllegalStateException("수용 인원이 부족하여 더 이상 특강을 신청할 수 없습니다.");
+
+        //특강 신청에 성공하면 schedule 의 신청 인원 수가 증가해야한다.
+        schedule.plusEnrollCount();
+
         //특강 히스토리 저장
         historyRepository.save(new SpecialLectureHistory(user, schedule));
     }

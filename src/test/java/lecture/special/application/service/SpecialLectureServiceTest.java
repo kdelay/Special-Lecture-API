@@ -112,8 +112,17 @@ class SpecialLectureServiceTest {
 
         //특강
         LocalDate speLecDate = LocalDate.parse("2024-06-28");
-        SpecialLecture specialLecture = whenSpecialLecture(pk, "자바");
-        whenSchedule(pk, specialLecture, 30, 0, speLecDate);
+        String speLecName = "자바";
+
+        SpecialLecture specialLecture = new SpecialLecture(pk, speLecName);
+        when(domain.getSpecialLecture(speLecName)).thenReturn(specialLecture);
+
+        int capacity = 1, enroll = 0;
+        Schedule schedule = new Schedule(pk, specialLecture, capacity, enroll, speLecDate);
+        when(domain.getSchedule(specialLecture, speLecDate)).thenReturn(schedule);
+
+        //현재 신청 인원은 0명이다.
+        assertThat(schedule.getEnroll_count()).isEqualTo(0);
 
         //특강 신청
         ApplyRequest req = initSpecialLectureReq(user.getUserId(), specialLecture.getSpeLecName(), speLecDate);
@@ -121,6 +130,9 @@ class SpecialLectureServiceTest {
 
         //save 메서드가 호출되었는지 검증
         verify(historyRepository).save(any(SpecialLectureHistory.class));
+
+        //특강 신청에 성공하면 schedule 의 신청 인원 수가 증가해야한다.
+        assertThat(schedule.getEnroll_count()).isEqualTo(1);
     }
 
     @Test
@@ -159,6 +171,37 @@ class SpecialLectureServiceTest {
         assertThatThrownBy(() -> specialLectureService.apply(user.getUserId(), speLecName, LocalDate.ofEpochDay(anyLong())))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("해당하는 특강이 없습니다.");
+    }
+
+    @Test
+    @DisplayName("더 이상 특강 인원을 받을 수 없는 경우(요청 시 수용 인원 초과)")
+    void enrollOverCapacityFailTest() {
+
+        Long pk = 1L;
+
+        //유저
+        User user = whenUser(pk);
+        when(domain.getUser(pk)).thenReturn(user);
+
+        //특강
+        LocalDate speLecDate = LocalDate.parse("2024-06-28");
+        String speLecName = "자바";
+
+        SpecialLecture specialLecture = new SpecialLecture(pk, speLecName);
+        when(domain.getSpecialLecture(speLecName)).thenReturn(specialLecture);
+
+        //수용 인원이 부족해서 더 이상 특강을 신청할 수 없다고 가정한다.
+        int capacity = 1, enroll = 1;
+        Schedule schedule = new Schedule(pk, specialLecture, capacity, enroll, speLecDate);
+        when(domain.getSchedule(specialLecture, speLecDate)).thenReturn(schedule);
+
+        //특강 신청
+        ApplyRequest req = initSpecialLectureReq(user.getUserId(), specialLecture.getSpeLecName(), speLecDate);
+
+        //특강을 신청할 수 없다.
+        assertThatThrownBy(() -> specialLectureService.apply(req.userId(), req.speLecName(), req.speLecDate()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("수용 인원이 부족하여 더 이상 특강을 신청할 수 없습니다.");
     }
 
     // ---------------------------------------------------------------------------
@@ -211,19 +254,23 @@ class SpecialLectureServiceTest {
      */
 
     @Test
-    @DisplayName("특강 신청 성공")
+    @DisplayName("특강 신청 성공 조회")
     void searchUserEnrolledTest() {
 
         Long pk = 1L;
 
         //유저
         User user = whenUser(pk);
+        when(domain.getUser(pk)).thenReturn(user);
 
         //특강
         String speLecName = "자바";
         LocalDate speLecDate = LocalDate.parse("2024-06-28");
         SpecialLecture specialLecture = whenSpecialLecture(pk, speLecName);
+        when(domain.getSpecialLecture(speLecName)).thenReturn(specialLecture);
+
         Schedule schedule = whenSchedule(pk, specialLecture, 2, 0, speLecDate);
+        when(domain.getSchedule(specialLecture, speLecDate)).thenReturn(schedule);
 
         //특강 신청 성공한 경우
         specialLectureService.apply(pk, speLecName, speLecDate);
@@ -241,7 +288,7 @@ class SpecialLectureServiceTest {
     }
 
     @Test
-    @DisplayName("특강 신청 실패")
+    @DisplayName("특강 신청 실패 조회")
     void searchUserEnrolledFailTest() {
 
         Long pk = 1L;

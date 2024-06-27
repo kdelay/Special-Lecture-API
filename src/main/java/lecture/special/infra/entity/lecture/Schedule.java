@@ -38,4 +38,8 @@ public class Schedule {
         this.enroll_count = enroll_count;
         this.speLecDate = speLecDate;
     }
+
+    public void plusEnrollCount() {
+        this.enroll_count++;
+    }
 }
