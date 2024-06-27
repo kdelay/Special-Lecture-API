@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: "jdbc:h2:tcp://localhost/~/study/db/special_lecture/lecture;MODE=MYSQL;NON_KEYWORDS=USER"
+    username: "sa"
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true # 브라우저에서 접근 가능하도록 설정
