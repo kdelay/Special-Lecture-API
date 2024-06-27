@@ -1,9 +1,10 @@
 package lecture.special.presentation.controller;
 
+import jakarta.websocket.server.PathParam;
 import lecture.special.domain.service.SpecialLectureService;
 import lecture.special.infra.entity.lecture.SpecialLecture;
 import lecture.special.presentation.request.ApplyRequest;
-import lecture.special.presentation.response.ApplyResponse;
+import lecture.special.presentation.response.MessageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +20,14 @@ public class SpecialLectureController {
     private final SpecialLectureService specialLectureService;
 
     @PostMapping("/apply")
-    public ResponseEntity<ApplyResponse> apply(@RequestBody ApplyRequest request) {
+    public ResponseEntity<MessageResponse> apply(@RequestBody ApplyRequest request) {
 
         Long userId = request.userId();
         String speLecName = request.speLecName();
 
         specialLectureService.apply(userId, speLecName);
 
-        ApplyResponse response = new ApplyResponse(speLecName + " 특강 신청에 성공하였습니다.");
+        MessageResponse response = new MessageResponse(speLecName + " 특강 신청에 성공하였습니다.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -35,11 +36,13 @@ public class SpecialLectureController {
         return specialLectureService.search();
     }
 
-//    @GetMapping("/application/{userId}")
-//    public ResponseEntity<SpecialLectureRes> searchUserEnrolled(@PathVariable Long userId) {
-//        specialLectureService.searchUserEnrolled(userId);
-//
-//        SpecialLectureRes response = new SpecialLectureRes(userId + "님은 특강 신청에 성공하였습니다.");
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
+    @GetMapping("/application/{userId}")
+    public ResponseEntity<MessageResponse> searchUserEnrolled(
+            @PathVariable Long userId, @PathParam("speLecName") String speLecName
+    ) {
+        specialLectureService.searchUserEnrolled(userId, speLecName);
+
+        MessageResponse response = new MessageResponse(userId + "님은 " + speLecName + " 특강 신청에 성공하였습니다.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

@@ -1,4 +1,4 @@
 package lecture.special.presentation.response;
 
-public record ApplyResponse(String message) {
+public record MessageResponse(String message) {
 }

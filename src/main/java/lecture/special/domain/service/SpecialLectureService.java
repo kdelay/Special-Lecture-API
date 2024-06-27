@@ -31,9 +31,10 @@ public class SpecialLectureService {
         User user = domain.getUser(userId);
 
         //특강 및 일정 조회
-        SpecialLecture specialLecture = specialLectureRepository.findBySpeLecName(speLecName);
-        Schedule schedule = scheduleRepository.findBySpecialLecture(specialLecture);
-        if (specialLecture == null && schedule == null) throw new NoSuchElementException("해당하는 특강이 없습니다.");
+        SpecialLecture specialLecture = specialLectureRepository.findBySpeLecName(speLecName)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 특강이 없습니다."));;
+        Schedule schedule = scheduleRepository.findBySpecialLecture(specialLecture)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 특강이 없습니다."));
 
         //특강 히스토리 저장
         historyRepository.save(new SpecialLectureHistory(user, schedule));
@@ -43,8 +44,20 @@ public class SpecialLectureService {
         return specialLectureRepository.findAll();
     }
 
-//    public void searchUserEnrolled(Long userId) {
-//        User user = getUser(userId);
-//        if (!user.is_enrolled()) throw new IllegalStateException(userId + "님은 특강 신청에 실패하였습니다.");
-//    }
+    public void searchUserEnrolled(Long userId, String speLecName) {
+
+        //사용자 조회 및 null 검증
+        User user = domain.getUser(userId);
+
+        //해당 이름에 부합하는 특강 데이터 가져오기
+        SpecialLecture specialLecture = specialLectureRepository.findBySpeLecName(speLecName)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 특강이 없습니다."));;
+        //특강 일정에 있는 `특강 id`와 부합하는 `특강 일정 id` 가져오기
+        Schedule schedule = scheduleRepository.findBySpecialLecture(specialLecture)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 특강이 없습니다."));;
+
+        //히스토리 내역에 (특강 id + 사용자 id)가 없으면 특강 신청에 실패한 사용자
+        historyRepository.findByUserAndSchedule(user, schedule)
+                .orElseThrow(() -> new IllegalArgumentException(userId + "님은 " + speLecName + " 특강 신청에 실패하였습니다."));
+    }
 }

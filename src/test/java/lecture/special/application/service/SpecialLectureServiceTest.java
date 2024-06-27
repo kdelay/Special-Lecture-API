@@ -74,14 +74,14 @@ class SpecialLectureServiceTest {
     //특강 초기 데이터 init
     private SpecialLecture whenSpecialLecture(Long id, String speLecName) {
         SpecialLecture specialLecture = new SpecialLecture(id, speLecName);
-        when(specialLectureRepository.findBySpeLecName(speLecName)).thenReturn(specialLecture);
+        when(specialLectureRepository.findBySpeLecName(speLecName)).thenReturn(Optional.of(specialLecture));
         return specialLecture;
     }
 
     //특강 일정 초기 데이터 init
     private Schedule whenSchedule(Long id, SpecialLecture specialLecture, int capacity, int enroll, LocalDate speLecDate) {
         Schedule schedule = new Schedule(id, specialLecture, capacity, enroll, speLecDate);
-        when(scheduleRepository.findById(id)).thenReturn(schedule);
+        when(scheduleRepository.findById(id)).thenReturn(Optional.of(schedule));
         return schedule;
     }
 
@@ -209,6 +209,12 @@ class SpecialLectureServiceTest {
     @Disabled
     @DisplayName("특강 신청 성공")
     void searchUserEnrolledTest() {
+
+//        String speLecName = "자바";
+//        SpecialLecture specialLecture = new SpecialLecture(pk, speLecName);
+//        when(specialLectureRepository.findBySpeLecName(speLecName)).thenReturn(specialLecture);
+//        Schedule schedule = new Schedule(pk, specialLecture, 1, 0, LocalDate.parse("2024-06-28"));
+//        when(scheduleRepository.findBySpecialLecture(specialLecture)).thenReturn(schedule);
 
 //        //유저
 //        Long userId = 1L;

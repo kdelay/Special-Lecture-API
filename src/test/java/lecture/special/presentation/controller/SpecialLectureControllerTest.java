@@ -1,12 +1,13 @@
 package lecture.special.presentation.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lecture.special.domain.repository.ScheduleRepository;
+import lecture.special.domain.repository.SpecialLectureHistoryRepository;
+import lecture.special.domain.repository.SpecialLectureRepository;
 import lecture.special.domain.repository.UserRepository;
 import lecture.special.domain.service.SpecialLectureService;
-import lecture.special.infra.entity.lecture.Schedule;
 import lecture.special.infra.entity.lecture.SpecialLecture;
 import lecture.special.presentation.request.ApplyRequest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +16,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -41,6 +40,15 @@ class SpecialLectureControllerTest {
 
     @MockBean
     UserRepository userRepository;
+
+    @MockBean
+    SpecialLectureRepository specialLectureRepository;
+
+    @MockBean
+    ScheduleRepository scheduleRepository;
+
+    @MockBean
+    SpecialLectureHistoryRepository historyRepository;
 
     // ---------------------------------------------------------------------------
 
@@ -65,11 +73,9 @@ class SpecialLectureControllerTest {
     }
 
     @Test
-    @Disabled
     @DisplayName("GET /lectures 특강 목록 조회")
     void searchTest() throws Exception {
 
-        LocalDate localDate = LocalDate.parse("2024-06-26");
         SpecialLecture lecture1 = new SpecialLecture(1L, "자바");
         SpecialLecture lecture2 = new SpecialLecture(2L, "자바");
         List<SpecialLecture> list = Arrays.asList(lecture1, lecture2);
@@ -83,25 +89,21 @@ class SpecialLectureControllerTest {
     }
 
     @Test
-    @Disabled
     @DisplayName("GET /lectures/application/{userId} 특강 신청 완료 여부 조회")
     void searchUserEnrolledTest() throws Exception {
 
-//        //유저 조회
-//        Long userId = 1L;
-//        User user = new User(userId);
-//        when(userRepository.findById(userId)).thenReturn(user);
-//
-//        doNothing().when(specialLectureService).searchUserEnrolled(userId);
-//
-//        mockMvc.perform(get("/lectures/application/{userId}", userId)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.message").value(userId + "님은 특강 신청에 성공하였습니다."));
-//
-//        //1번 호출 되었는지 검증
-//        verify(specialLectureService, times(1)).searchUserEnrolled(userId);
+        Long userId = 1L;
+        String speLecName = "자바";
+
+        doNothing().when(specialLectureService).searchUserEnrolled(anyLong(), anyString());
+
+        mockMvc.perform(get("/lectures/application/{userId}", userId)
+                        .param("speLecName", speLecName)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        //1번 호출 되었는지 검증
+        verify(specialLectureService).searchUserEnrolled(eq(userId), eq(speLecName));
     }
 
 }
