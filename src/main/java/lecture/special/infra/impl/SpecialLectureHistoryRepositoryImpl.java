@@ -1,8 +1,8 @@
 package lecture.special.infra.impl;
 
+import lecture.special.domain.repository.SpecialLectureHistoryRepository;
 import lecture.special.infra.entity.lecture.Schedule;
 import lecture.special.infra.entity.lecture.SpecialLectureHistory;
-import lecture.special.domain.repository.SpecialLectureHistoryRepository;
 import lecture.special.infra.entity.user.User;
 import lecture.special.infra.jpa.JpaSpecialLectureHistoryRepository;
 import lombok.RequiredArgsConstructor;

@@ -22,11 +22,6 @@ public class SpecialLectureRepositoryImpl implements SpecialLectureRepository {
     }
 
     @Override
-    public List<SpecialLecture> findAll() {
-        return jpaLectureRepository.findAll();
-    }
-
-    @Override
     public List<SpecialLectureWithScheduleDTO> findSpecialLectureWithSchedules() {
         return jpaLectureRepository.findSpecialLectureWithSchedules();
     }

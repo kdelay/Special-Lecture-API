@@ -1,7 +1,5 @@
 package lecture.special.domain.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lecture.special.domain.repository.SpecialLectureHistoryRepository;
 import lecture.special.domain.repository.SpecialLectureRepository;
 import lecture.special.domain.service.business.SpecialLectureDomain;

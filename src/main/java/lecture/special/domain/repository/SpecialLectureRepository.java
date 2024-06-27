@@ -14,8 +14,7 @@ public interface SpecialLectureRepository {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<SpecialLecture> findBySpeLecName(String speLecName);
 
-    List<SpecialLecture> findAll();
-
+    //특강 목록 조회
     @Query("SELECT new lecture.special.infra.entity.mapper.dto.SpecialLectureWithScheduleDTO(" +
             "sl.id, sl.speLecName, s.id, s.capacityCount, s.enrollCount, s.speLecDate) " +
             "FROM SpecialLecture sl JOIN sl.schedules s")
