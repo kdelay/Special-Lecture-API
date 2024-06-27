@@ -5,7 +5,7 @@
 
   ```
 Table user {
-  user_id bigint [pk, note: 'auto increment']
+  user_id bigint [pk, note: '유저 id']
 }
 
 Table schedule {
