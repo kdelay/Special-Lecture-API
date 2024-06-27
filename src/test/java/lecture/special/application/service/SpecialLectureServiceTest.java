@@ -18,9 +18,12 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -160,24 +163,40 @@ class SpecialLectureServiceTest {
      */
 
     @Test
-    @Disabled
     @DisplayName("특강 목록 조회 성공")
     void searchTest() {
 
-//        LocalDate localDate = LocalDate.parse("2024-06-26");
-//        SpecialLecture lecture1 = new SpecialLecture(1L, "자바", 1, localDate);
-//        SpecialLecture lecture2 = new SpecialLecture(2L, "스프링", 2, localDate);
-//        List<SpecialLecture> list = Arrays.asList(lecture1, lecture2);
-//
-//        when(specialLectureRepository.findAll()).thenReturn(list);
-//
-//        List<SpecialLecture> search = specialLectureService.search();
-//
-//        //2개의 list를 가지고 있는지 검증
-//        assertThat(search).hasSize(2);
-//
-//        //id가 1L, 2L 가 있는지 검증
-//        assertThat(search).extracting(SpecialLecture::getId).containsExactlyInAnyOrder(1L, 2L);
+        Long speLecId = 1L, scheduleId = 1L;
+
+        String speLecName1 = "자바";
+        SpecialLecture lecture1 = new SpecialLecture(speLecId++, speLecName1);
+        Schedule schedule1 = new Schedule(scheduleId++, lecture1, 2, 0, LocalDate.parse("2024-06-26"));
+        Schedule schedule2 = new Schedule(scheduleId++, lecture1, 30, 0, LocalDate.parse("2024-06-29"));
+
+        //특강 일정이 모두 동일한 특강을 가지고 있는지 검증
+        assertThat(schedule1.getSpecialLecture().getSpeLecName()).isEqualTo("자바");
+        assertThat(schedule2.getSpecialLecture().getSpeLecName()).isEqualTo("자바");
+
+        String speLecName2 = "스프링";
+        SpecialLecture lecture2 = new SpecialLecture(speLecId, speLecName2);
+        Schedule schedule3 = new Schedule(scheduleId++, lecture2, 1, 0, LocalDate.parse("2024-06-25"));
+        Schedule schedule4 = new Schedule(scheduleId, lecture2, 5, 0, LocalDate.parse("2024-06-28"));
+
+        //특강 일정이 모두 동일한 특강을 가지고 있는지 검증
+        assertThat(schedule3.getSpecialLecture().getSpeLecName()).isEqualTo("스프링");
+        assertThat(schedule4.getSpecialLecture().getSpeLecName()).isEqualTo("스프링");
+
+        List<SpecialLecture> list = Arrays.asList(lecture1, lecture2);
+
+        when(specialLectureRepository.findAll()).thenReturn(list);
+
+        List<SpecialLecture> search = specialLectureService.search();
+
+        //2개의 list를 가지고 있는지 검증
+        assertThat(search).hasSize(2);
+
+        //id가 1L, 2L 가 있는지 검증
+        assertThat(search).extracting(SpecialLecture::getId).containsExactlyInAnyOrder(1L, 2L);
     }
 
     // ---------------------------------------------------------------------------

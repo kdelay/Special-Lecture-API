@@ -1,15 +1,15 @@
 package lecture.special.presentation.controller;
 
 import lecture.special.domain.service.SpecialLectureService;
+import lecture.special.infra.entity.lecture.SpecialLecture;
 import lecture.special.presentation.request.ApplyRequest;
 import lecture.special.presentation.response.ApplyResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/lectures")
@@ -30,10 +30,10 @@ public class SpecialLectureController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-//    @GetMapping
-//    public List<SpecialLecture> search() {
-//        return specialLectureService.search();
-//    }
+    @GetMapping
+    public List<SpecialLecture> search() {
+        return specialLectureService.search();
+    }
 
 //    @GetMapping("/application/{userId}")
 //    public ResponseEntity<SpecialLectureRes> searchUserEnrolled(@PathVariable Long userId) {

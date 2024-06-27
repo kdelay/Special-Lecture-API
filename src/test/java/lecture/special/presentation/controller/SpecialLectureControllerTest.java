@@ -3,6 +3,8 @@ package lecture.special.presentation.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lecture.special.domain.repository.UserRepository;
 import lecture.special.domain.service.SpecialLectureService;
+import lecture.special.infra.entity.lecture.Schedule;
+import lecture.special.infra.entity.lecture.SpecialLecture;
 import lecture.special.presentation.request.ApplyRequest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -13,10 +15,17 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = SpecialLectureController.class)
 class SpecialLectureControllerTest {
@@ -60,17 +69,17 @@ class SpecialLectureControllerTest {
     @DisplayName("GET /lectures 특강 목록 조회")
     void searchTest() throws Exception {
 
-//        LocalDate localDate = LocalDate.parse("2024-06-26");
-//        SpecialLecture lecture1 = new SpecialLecture(1L, "자바", 1, localDate);
-//        SpecialLecture lecture2 = new SpecialLecture(1L, "자바", 1, localDate);
-//        List<SpecialLecture> list = Arrays.asList(lecture1, lecture2);
-//
-//        when(specialLectureService.search()).thenReturn(list);
-//
-//        mockMvc.perform(get("/lectures"))
-//                .andExpect(status().isOk())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$", hasSize(2)));
+        LocalDate localDate = LocalDate.parse("2024-06-26");
+        SpecialLecture lecture1 = new SpecialLecture(1L, "자바");
+        SpecialLecture lecture2 = new SpecialLecture(2L, "자바");
+        List<SpecialLecture> list = Arrays.asList(lecture1, lecture2);
+
+        when(specialLectureService.search()).thenReturn(list);
+
+        mockMvc.perform(get("/lectures"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(2)));
     }
 
     @Test
