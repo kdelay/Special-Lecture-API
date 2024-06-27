@@ -21,25 +21,25 @@ public class Schedule {
 
     //수용 인원
     @Column(nullable = false)
-    private int capacity_count;
+    private int capacityCount;
 
     //신청 인원
     @Column(nullable = false)
-    private int enroll_count;
+    private int enrollCount;
 
     //특강 날짜
     @Column(nullable = false)
     private LocalDate speLecDate;
 
-    public Schedule(Long id, SpecialLecture specialLecture, int capacity_count, int enroll_count, LocalDate speLecDate) {
+    public Schedule(Long id, SpecialLecture specialLecture, int capacityCount, int enrollCount, LocalDate speLecDate) {
         this.id = id;
         this.specialLecture = specialLecture;
-        this.capacity_count = capacity_count;
-        this.enroll_count = enroll_count;
+        this.capacityCount = capacityCount;
+        this.enrollCount = enrollCount;
         this.speLecDate = speLecDate;
     }
 
     public void plusEnrollCount() {
-        this.enroll_count++;
+        this.enrollCount++;
     }
 }

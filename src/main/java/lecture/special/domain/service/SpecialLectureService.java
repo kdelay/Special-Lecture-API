@@ -1,11 +1,14 @@
 package lecture.special.domain.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lecture.special.domain.repository.SpecialLectureHistoryRepository;
 import lecture.special.domain.repository.SpecialLectureRepository;
 import lecture.special.domain.service.business.SpecialLectureDomain;
 import lecture.special.infra.entity.lecture.Schedule;
 import lecture.special.infra.entity.lecture.SpecialLecture;
 import lecture.special.infra.entity.lecture.SpecialLectureHistory;
+import lecture.special.infra.entity.mapper.dto.SpecialLectureWithScheduleDTO;
 import lecture.special.infra.entity.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,7 +36,7 @@ public class SpecialLectureService {
         Schedule schedule = domain.getSchedule(specialLecture, speLecDate);
 
         //더 이상 특강 인원을 받을 수 없는 경우 exception (요청 시 수용 인원 초과)
-        boolean isFullCapacity = schedule.getEnroll_count() >= schedule.getCapacity_count();
+        boolean isFullCapacity = schedule.getEnrollCount() >= schedule.getCapacityCount();
         if (isFullCapacity) throw new IllegalStateException("수용 인원이 부족하여 더 이상 특강을 신청할 수 없습니다.");
 
         //특강 신청에 성공하면 schedule 의 신청 인원 수가 증가해야한다.
@@ -43,8 +46,8 @@ public class SpecialLectureService {
         historyRepository.save(new SpecialLectureHistory(user, schedule));
     }
 
-    public List<SpecialLecture> search() {
-        return specialLectureRepository.findAll();
+    public List<SpecialLectureWithScheduleDTO> search() {
+        return specialLectureRepository.findSpecialLectureWithSchedules();
     }
 
     public void searchUserEnrolled(Long userId, String speLecName, LocalDate speLecDate) {

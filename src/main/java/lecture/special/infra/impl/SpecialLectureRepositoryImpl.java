@@ -2,6 +2,7 @@ package lecture.special.infra.impl;
 
 import lecture.special.domain.repository.SpecialLectureRepository;
 import lecture.special.infra.entity.lecture.SpecialLecture;
+import lecture.special.infra.entity.mapper.dto.SpecialLectureWithScheduleDTO;
 import lecture.special.infra.jpa.JpaSpecialLectureRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -23,5 +24,10 @@ public class SpecialLectureRepositoryImpl implements SpecialLectureRepository {
     @Override
     public List<SpecialLecture> findAll() {
         return jpaLectureRepository.findAll();
+    }
+
+    @Override
+    public List<SpecialLectureWithScheduleDTO> findSpecialLectureWithSchedules() {
+        return jpaLectureRepository.findSpecialLectureWithSchedules();
     }
 }

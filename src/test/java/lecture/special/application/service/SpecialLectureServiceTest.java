@@ -1,5 +1,6 @@
 package lecture.special.application.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lecture.special.domain.repository.ScheduleRepository;
 import lecture.special.domain.repository.SpecialLectureHistoryRepository;
 import lecture.special.domain.repository.SpecialLectureRepository;
@@ -9,6 +10,7 @@ import lecture.special.domain.service.business.SpecialLectureDomain;
 import lecture.special.infra.entity.lecture.Schedule;
 import lecture.special.infra.entity.lecture.SpecialLecture;
 import lecture.special.infra.entity.lecture.SpecialLectureHistory;
+import lecture.special.infra.entity.mapper.dto.SpecialLectureWithScheduleDTO;
 import lecture.special.infra.entity.user.User;
 import lecture.special.presentation.request.ApplyRequest;
 import org.junit.jupiter.api.AfterEach;
@@ -122,7 +124,7 @@ class SpecialLectureServiceTest {
         when(domain.getSchedule(specialLecture, speLecDate)).thenReturn(schedule);
 
         //현재 신청 인원은 0명이다.
-        assertThat(schedule.getEnroll_count()).isEqualTo(0);
+        assertThat(schedule.getEnrollCount()).isEqualTo(0);
 
         //특강 신청
         ApplyRequest req = initSpecialLectureReq(user.getUserId(), specialLecture.getSpeLecName(), speLecDate);
@@ -132,7 +134,7 @@ class SpecialLectureServiceTest {
         verify(historyRepository).save(any(SpecialLectureHistory.class));
 
         //특강 신청에 성공하면 schedule 의 신청 인원 수가 증가해야한다.
-        assertThat(schedule.getEnroll_count()).isEqualTo(1);
+        assertThat(schedule.getEnrollCount()).isEqualTo(1);
     }
 
     @Test
@@ -212,7 +214,7 @@ class SpecialLectureServiceTest {
 
     @Test
     @DisplayName("특강 목록 조회 성공")
-    void searchTest() {
+    void searchTest() throws JsonProcessingException {
 
         Long speLecId = 1L, scheduleId = 1L;
 
@@ -234,17 +236,16 @@ class SpecialLectureServiceTest {
         assertThat(schedule3.getSpecialLecture().getSpeLecName()).isEqualTo("스프링");
         assertThat(schedule4.getSpecialLecture().getSpeLecName()).isEqualTo("스프링");
 
-        List<SpecialLecture> list = Arrays.asList(lecture1, lecture2);
+        //데이터 하나 담기
+        SpecialLectureWithScheduleDTO dto = new SpecialLectureWithScheduleDTO(speLecId, speLecName1, scheduleId, 2, 0, LocalDate.parse("2024-06-26"));
+        List<SpecialLectureWithScheduleDTO> list = Arrays.asList(dto);
 
-        when(specialLectureRepository.findAll()).thenReturn(list);
+        when(specialLectureRepository.findSpecialLectureWithSchedules()).thenReturn(list);
 
-        List<SpecialLecture> search = specialLectureService.search();
+        List<SpecialLectureWithScheduleDTO> search = specialLectureService.search();
 
         //2개의 list를 가지고 있는지 검증
-        assertThat(search).hasSize(2);
-
-        //id가 1L, 2L 가 있는지 검증
-        assertThat(search).extracting(SpecialLecture::getId).containsExactlyInAnyOrder(1L, 2L);
+        assertThat(search).hasSize(1);
     }
 
     // ---------------------------------------------------------------------------

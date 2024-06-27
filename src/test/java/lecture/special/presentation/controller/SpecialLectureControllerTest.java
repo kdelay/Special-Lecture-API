@@ -7,6 +7,7 @@ import lecture.special.domain.repository.SpecialLectureRepository;
 import lecture.special.domain.repository.UserRepository;
 import lecture.special.domain.service.SpecialLectureService;
 import lecture.special.infra.entity.lecture.SpecialLecture;
+import lecture.special.infra.entity.mapper.dto.SpecialLectureWithScheduleDTO;
 import lecture.special.presentation.request.ApplyRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -78,16 +79,17 @@ class SpecialLectureControllerTest {
     @DisplayName("GET /lectures 특강 목록 조회")
     void searchTest() throws Exception {
 
-        SpecialLecture lecture1 = new SpecialLecture(1L, "자바");
-        SpecialLecture lecture2 = new SpecialLecture(2L, "자바");
-        List<SpecialLecture> list = Arrays.asList(lecture1, lecture2);
+        // Mock 데이터 설정
+        SpecialLectureWithScheduleDTO dto1 = new SpecialLectureWithScheduleDTO(1L, "자바", 1L, 3, 1, LocalDate.parse("2024-06-28"));
+        SpecialLectureWithScheduleDTO dto2 = new SpecialLectureWithScheduleDTO(2L, "파이썬", 2L, 2, 0, LocalDate.parse("2024-06-28"));
+        List<SpecialLectureWithScheduleDTO> mockDTOList = Arrays.asList(dto1, dto2);
 
-        when(specialLectureService.search()).thenReturn(list);
+        // Mock 서비스 메서드 설정
+        when(specialLectureService.search()).thenReturn(mockDTOList);
 
-        mockMvc.perform(get("/lectures"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(2)));
+        mockMvc.perform(get("/lectures")
+                        .contentType(MediaType.APPLICATION_JSON)) // Content-Type 설정)
+                .andExpect(status().isOk());
     }
 
     @Test

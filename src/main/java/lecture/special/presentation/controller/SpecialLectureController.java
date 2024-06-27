@@ -1,8 +1,10 @@
 package lecture.special.presentation.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.websocket.server.PathParam;
 import lecture.special.domain.service.SpecialLectureService;
 import lecture.special.infra.entity.lecture.SpecialLecture;
+import lecture.special.infra.entity.mapper.dto.SpecialLectureWithScheduleDTO;
 import lecture.special.presentation.request.ApplyRequest;
 import lecture.special.presentation.response.MessageResponse;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +36,7 @@ public class SpecialLectureController {
     }
 
     @GetMapping
-    public List<SpecialLecture> search() {
+    public List<SpecialLectureWithScheduleDTO> search() {
         return specialLectureService.search();
     }
 
