@@ -4,10 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lecture.special.domain.Schedule;
 import lecture.special.domain.SpecialLecture;
 import lecture.special.domain.SpecialLectureService;
-import lecture.special.domain.interfaces.ScheduleRepository;
-import lecture.special.domain.interfaces.SpecialLectureHistoryRepository;
-import lecture.special.domain.interfaces.SpecialLectureRepository;
-import lecture.special.domain.interfaces.UserRepository;
 import lecture.special.interfaces.ApplyRequest;
 import lecture.special.interfaces.SpecialLectureController;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = SpecialLectureController.class)
-class SpecialLectureEntityControllerTest {
+class SpecialLectureControllerTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -38,18 +34,6 @@ class SpecialLectureEntityControllerTest {
 
     @MockBean
     SpecialLectureService specialLectureService;
-
-    @MockBean
-    UserRepository userRepository;
-
-    @MockBean
-    SpecialLectureRepository specialLectureRepository;
-
-    @MockBean
-    ScheduleRepository scheduleRepository;
-
-    @MockBean
-    SpecialLectureHistoryRepository historyRepository;
 
     // ---------------------------------------------------------------------------
 
